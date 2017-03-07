@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -18,6 +19,9 @@ namespace WebSocketManager
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
+
+        public string SocketId { get; set; }
+
         public WebSocketHandler(WebSocketConnectionManager webSocketConnectionManager)
         {
             WebSocketConnectionManager = webSocketConnectionManager;
@@ -26,11 +30,12 @@ namespace WebSocketManager
         public virtual async Task OnConnected(WebSocket socket)
         {
             WebSocketConnectionManager.AddSocket(socket);
+            SocketId = WebSocketConnectionManager.GetId(socket);
 
             await SendMessageAsync(socket, new Message()
             {
                 MessageType = MessageType.ConnectionEvent,
-                Data = WebSocketConnectionManager.GetId(socket)
+                Data = SocketId
             });
         }
 
@@ -67,14 +72,16 @@ namespace WebSocketManager
             }
         }
 
-        public async Task InvokeClientMethodAsync(string socketId, string methodName, object[] arguments)
+        public async Task InvokeClientMethodAsync(string socketId, string operationId, string controller, string action, object[] arguments)
         {
             var message = new Message()
             {
                 MessageType = MessageType.ClientMethodInvocation,
                 Data = JsonConvert.SerializeObject(new InvocationDescriptor()
                 {
-                    MethodName = methodName,
+                    OperationId = operationId,
+                    Controller = controller,
+                    Action = action,
                     Arguments = arguments
                 }, _jsonSerializerSettings)
             };
@@ -82,28 +89,34 @@ namespace WebSocketManager
             await SendMessageAsync(socketId, message);
         }
 
-        public async Task InvokeClientMethodToAllAsync(string methodName, params object[] arguments)
+        public async Task InvokeClientMethodToAllAsync(string operationId, string controller, string action, params object[] arguments)
         {
             foreach (var pair in WebSocketConnectionManager.GetAll())
             {
                 if (pair.Value.State == WebSocketState.Open)
-                    await InvokeClientMethodAsync(pair.Key, methodName, arguments);
+                    await InvokeClientMethodAsync(pair.Key, operationId, controller, action, arguments);
             }
         }
 
-        public async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
+        public virtual async Task ReceiveAsync(WebSocket socket, WebSocketReceiveResult result, byte[] buffer)
         {
             var serializedInvocationDescriptor = Encoding.UTF8.GetString(buffer, 0, result.Count);
             var invocationDescriptor = JsonConvert.DeserializeObject<InvocationDescriptor>(serializedInvocationDescriptor);
 
-            var method = this.GetType().GetMethod(invocationDescriptor.MethodName);
+            // Make sure that only public methods can be invoked by clients.
+            var method = this.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(m =>
+                                            m.Name.Equals(invocationDescriptor.Action, StringComparison.OrdinalIgnoreCase));
 
-            if (method == null)
+            // Check if the Access attribute has been set for the method and if so get it.
+            var clientAccess = method?.GetCustomAttribute<ClientAccessAttribute>();
+
+            // If the method does not exist or client access has been denied to it then return an error.
+            if (method == null || (clientAccess != null && clientAccess.AccessibilityOptions == ClientAccessibilityOptions.DenyAll))
             {
                 await SendMessageAsync(socket, new Message()
                 {
                     MessageType = MessageType.Text,
-                    Data = $"Cannot find method {invocationDescriptor.MethodName}"
+                    Data = $"Cannot find method {invocationDescriptor.Action}"
                 });
                 return;
             }
@@ -117,7 +130,7 @@ namespace WebSocketManager
                 await SendMessageAsync(socket, new Message()
                 {
                     MessageType = MessageType.Text,
-                    Data = $"The {invocationDescriptor.MethodName} method does not take {invocationDescriptor.Arguments.Length} parameters!"
+                    Data = $"The {invocationDescriptor.Action} method does not take {invocationDescriptor.Arguments.Length} parameters!"
                 });
             }
 
@@ -126,7 +139,7 @@ namespace WebSocketManager
                 await SendMessageAsync(socket, new Message()
                 {
                     MessageType = MessageType.Text,
-                    Data = $"The {invocationDescriptor.MethodName} method takes different arguments!"
+                    Data = $"The {invocationDescriptor.Action} method takes different arguments!"
                 });
             }
         }

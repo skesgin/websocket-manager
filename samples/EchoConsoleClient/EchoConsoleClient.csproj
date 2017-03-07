@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>EchoConsoleClient</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>EchoConsoleClient</PackageId>
+    <PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wp8+wpa81</PackageTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\WebSocketManager.Client\WebSocketManager.Client.csproj" />
+    <ProjectReference Include="..\..\src\WebSocketManager.Common\WebSocketManager.Common.csproj" />
+  </ItemGroup>
+
+</Project>

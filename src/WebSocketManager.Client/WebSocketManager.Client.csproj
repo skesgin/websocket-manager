@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>WebSocketManager.Client</AssemblyName>
+    <OutputType>Library</OutputType>
+    <PackageId>WebSocketManager.Client</PackageId>
+    <PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wp8+wpa81</PackageTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebSocketManager.Common\WebSocketManager.Common.csproj" />
+    <PackageReference Include="System.Net.WebSockets.Client" Version="4.3.0-*" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+  </ItemGroup>
+
+</Project>

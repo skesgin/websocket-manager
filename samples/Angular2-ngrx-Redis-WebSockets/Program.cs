@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 
-namespace MvcSample
+namespace WebSocketsSample
 {
     public class Program
     {
@@ -14,7 +14,7 @@ namespace MvcSample
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                //.UseIISIntegration()
+                .UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();
 

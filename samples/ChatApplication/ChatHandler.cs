@@ -11,6 +11,7 @@ namespace ChatApplication
         {
         }
 
+        [ClientAccess(ClientAccessibilityOptions.DenyAll)]
         public override async Task OnConnected(WebSocket socket)
         {
             await base.OnConnected(socket);
@@ -31,6 +32,7 @@ namespace ChatApplication
             await InvokeClientMethodToAllAsync("receiveMessage", socketId, message);
         }
 
+        [ClientAccess(ClientAccessibilityOptions.DenyAll)]
         public override async Task OnDisconnected(WebSocket socket)
         {
             var socketId = WebSocketConnectionManager.GetId(socket);

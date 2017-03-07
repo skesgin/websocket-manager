@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <DebugType>portable</DebugType>
+    <AssemblyName>ChatApplication</AssemblyName>
+    <PackageId>ChatApplication</PackageId>
+    <PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wp8+wpa81</PackageTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\WebSocketManager\WebSocketManager.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="1.0.0" />
+    <PackageReference Include="Microsoft.NETCore.App" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="wwwroot\index.html" />
+    <Content Include="wwwroot\WebSocketManager\WebSocketManager.js" />
+    <Content Include="wwwroot\WebSocketManager\WebSocketManager.min.js" />
+    <Content Include="wwwroot\WebSocketManager\WebSocketManager.min.js.map" />
+  </ItemGroup>
+
+</Project>

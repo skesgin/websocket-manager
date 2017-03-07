@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -14,11 +14,11 @@
 	<ul id="messages"></ul>
 
 
-	<script data-main="scripts/main" src="https://rawgit.com/radu-matei/websocket-manager/master/src/WebSocketManager.Client.TS/dist/WebSocketManager.js"></script>
+	<script data-main="scripts/main" src="/WebSocketManager/WebSocketManager.js"></script>
 
 	<script language="javascript" type="text/javascript">
           
-            var connection = new WebSocketManager.Connection("ws://localhost:5000/chat");
+            var connection = new WebSocketManager.Connection("ws://localhost:5001/chat");
             connection.enableLogging = true;
 
             connection.connectionMethods.onConnected = () => {

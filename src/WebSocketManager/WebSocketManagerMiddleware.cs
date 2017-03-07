@@ -11,8 +11,7 @@ namespace WebSocketManager
         private readonly RequestDelegate _next;
         private WebSocketHandler _webSocketHandler { get; set; }
 
-        public WebSocketManagerMiddleware(RequestDelegate next, 
-                                          WebSocketHandler webSocketHandler)
+        public WebSocketManagerMiddleware(RequestDelegate next, WebSocketHandler webSocketHandler)
         {
             _next = next;
             _webSocketHandler = webSocketHandler;
@@ -33,18 +32,15 @@ namespace WebSocketManager
                     await _webSocketHandler.ReceiveAsync(socket, result, buffer);
                     return;
                 }
-
                 else if(result.MessageType == WebSocketMessageType.Close)
                 {
                     try
                     {
                         await _webSocketHandler.OnDisconnected(socket);
                     }
-
                     catch(WebSocketException e)
                     {
                     }
-
                     return;
                 }
 
@@ -63,7 +59,7 @@ namespace WebSocketManager
                 var result = await socket.ReceiveAsync(buffer: new ArraySegment<byte>(buffer),
                                                        cancellationToken: CancellationToken.None);
 
-                handleMessage(result, buffer);                
+                handleMessage(result, buffer);
             }
         }
     }
